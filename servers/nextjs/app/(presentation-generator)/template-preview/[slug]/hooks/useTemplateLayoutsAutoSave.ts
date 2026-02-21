@@ -1,11 +1,16 @@
 'use client';
 
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { FASTAPI_URL } from '@/constants';
 import { getHeader } from '@/app/(presentation-generator)/services/api/header';
 import { ApiResponseHandler } from '@/app/(presentation-generator)/services/api/api-error-handler';
-import { ProcessedSlide } from '@/app/custom-template/types';
+import { ProcessedSlide } from '@/app/(presentation-generator)/custom-template/types';
 import { CustomTemplateLayout } from '@/app/hooks/useCustomTemplates';
+
+/** ProcessedSlide after HTML-to-React conversion (has react code and layout_name) */
+interface ProcessedSlideWithReact extends ProcessedSlide {
+  react?: string;
+  layout_name?: string;
+}
 
 interface LayoutPayload {
     layout_id: string;
@@ -16,7 +21,7 @@ interface LayoutPayload {
 interface UseTemplateLayoutsAutoSaveOptions {
     templateId: string | null;
     layouts: CustomTemplateLayout[];
-    slideStates: ProcessedSlide[];
+    slideStates: ProcessedSlideWithReact[];
     debounceMs?: number;
     enabled?: boolean;
 }
@@ -30,7 +35,7 @@ export const useTemplateLayoutsAutoSave = ({
     debounceMs = 2000,
     enabled = true,
 }: UseTemplateLayoutsAutoSaveOptions) => {
-    const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastSavedDataRef = useRef<string>('');
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
     const isSavingRef = useRef<boolean>(false);
@@ -72,7 +77,7 @@ export const useTemplateLayoutsAutoSave = ({
             setSaveStatus('saving');
             console.log('🔄 Auto-saving template layouts...');
 
-            const response = await fetch(`${FASTAPI_URL}/api/v1/ppt/template/update`, {
+            const response = await fetch('/api/v1/ppt/template/update', {
                 method: 'PUT',
                 headers: getHeader(),
                 body: JSON.stringify({
