@@ -1,5 +1,6 @@
 import { TemplateWithData, TemplateGroupSettings, createTemplateEntry, TemplateLayoutsWithSettings } from "./utils";
 
+export type { TemplateLayoutsWithSettings };
 
 // TODO: Step 1: Import All templates Layouts Here (like the ones below)
 
