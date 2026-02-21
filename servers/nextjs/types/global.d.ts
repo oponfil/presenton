@@ -1,5 +1,8 @@
-/** Next.js inlines NEXT_PUBLIC_* at build time; this declaration satisfies TypeScript in client code */
-declare const process: { env: Record<string, string | undefined> };
+/** Minimal process declaration for Next.js (client inlines NEXT_PUBLIC_*; server uses env/cwd) */
+declare const process: {
+  env: Record<string, string | undefined>;
+  cwd: () => string;
+};
 
 interface ShapeProps {
   id: string;
