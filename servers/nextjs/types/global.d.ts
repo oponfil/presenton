@@ -1,3 +1,6 @@
+/** Next.js inlines NEXT_PUBLIC_* at build time; this declaration satisfies TypeScript in client code */
+declare const process: { env: Record<string, string | undefined> };
+
 interface ShapeProps {
   id: string;
   type: 'rectangle' | 'circle' | 'line';

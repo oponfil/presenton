@@ -38,6 +38,8 @@ import ToolTip from "@/components/ToolTip";
 import { clearPresentationData } from "@/store/slices/presentationGeneration";
 import { clearHistory } from "@/store/slices/undoRedoSlice";
 
+declare const process: { env: Record<string, string | undefined> };
+
 const Header = ({
   presentation_id,
   currentSlide,
@@ -57,6 +59,9 @@ const Header = ({
   );
 
   const { onUndo, onRedo, canUndo, canRedo } = usePresentationUndoRedo();
+
+  const hideDashboard =
+    process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true";
 
   const get_presentation_pptx_model = async (id: string): Promise<PptxPresentationModel> => {
     const response = await fetch(`/api/presentation_to_pptx_model?id=${id}`);
@@ -264,13 +269,23 @@ const Header = ({
 
         <Announcement />
         <Wrapper className="flex items-center justify-between py-1">
-          <Link href="/dashboard" className="min-w-[162px]">
-            <img
-              className="h-16"
-              src="/logo-white.png"
-              alt="Presentation logo"
-            />
-          </Link>
+          {hideDashboard ? (
+            <span className="min-w-[162px] inline-block">
+              <img
+                className="h-16"
+                src="/logo-white.png"
+                alt="Presentation logo"
+              />
+            </span>
+          ) : (
+            <Link href="/dashboard" className="min-w-[162px]">
+              <img
+                className="h-16"
+                src="/logo-white.png"
+                alt="Presentation logo"
+              />
+            </Link>
+          )}
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-4 2xl:gap-6">

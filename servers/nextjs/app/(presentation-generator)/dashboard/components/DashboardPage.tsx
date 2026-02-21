@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import Wrapper from "@/components/Wrapper";
 import { DashboardApi } from "@/app/(presentation-generator)/services/api/dashboard";
@@ -10,11 +11,20 @@ import { PresentationGrid } from "@/app/(presentation-generator)/dashboard/compo
 import Header from "@/app/(presentation-generator)/dashboard/components/Header";
 
 const DashboardPage: React.FC = () => {
+  const router = useRouter();
   const [presentations, setPresentations] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true") {
+      router.replace("/");
+      return;
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true") return;
     const loadData = async () => {
       await fetchPresentations();
     };
