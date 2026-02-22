@@ -52,7 +52,7 @@ const UploadPage = () => {
     instructions: "",
     includeTableOfContents: false,
     includeTitleSlide: false,
-    webSearch: false,
+    webSearch: true,
   });
 
   const [loadingState, setLoadingState] = useState<LoadingState>({
