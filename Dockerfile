@@ -42,7 +42,9 @@ RUN npm install
 # Copy Next.js app
 COPY servers/nextjs/ /app/servers/nextjs/
 
-# Build the Next.js app
+# Build the Next.js app (NEXT_PUBLIC_* must be set at build time to be inlined)
+ARG NEXT_PUBLIC_HIDE_DASHBOARD=false
+ENV NEXT_PUBLIC_HIDE_DASHBOARD=$NEXT_PUBLIC_HIDE_DASHBOARD
 WORKDIR /app/servers/nextjs
 RUN npm run build
 

@@ -1,17 +1,18 @@
 "use client";
-import { LayoutDashboard, Settings, Upload } from "lucide-react";
+import { LayoutDashboard, Settings } from "lucide-react";
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 const HeaderNav = () => {
 
   const canChangeKeys = useSelector((state: RootState) => state.userConfig.can_change_keys);
   const pathname = usePathname();
-  const hideDashboard = process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true";
+  const { hideDashboard } = usePublicConfig();
 
   return (
     <div className="flex items-center gap-2">

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Roboto, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { PublicConfigProvider } from "./PublicConfigProvider";
 import MixpanelInitializer from "./MixpanelInitializer";
 import { Toaster } from "@/components/ui/sonner";
 const inter = localFont({
@@ -78,6 +79,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const hideDashboard = process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true";
 
   return (
     <html lang="en">
@@ -85,11 +87,13 @@ export default function RootLayout({
         className={`${inter.variable} ${roboto.variable} ${instrument_sans.variable} antialiased`}
       >
         <Providers>
-          <MixpanelInitializer>
+          <PublicConfigProvider hideDashboard={hideDashboard}>
+            <MixpanelInitializer>
 
-            {children}
+              {children}
 
-          </MixpanelInitializer>
+            </MixpanelInitializer>
+          </PublicConfigProvider>
         </Providers>
         <Toaster position="top-center" />
       </body>

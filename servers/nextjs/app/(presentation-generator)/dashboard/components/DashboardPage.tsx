@@ -6,25 +6,26 @@ import { useRouter } from "next/navigation";
 import Wrapper from "@/components/Wrapper";
 import { DashboardApi } from "@/app/(presentation-generator)/services/api/dashboard";
 import { PresentationGrid } from "@/app/(presentation-generator)/dashboard/components/PresentationGrid";
-
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 import Header from "@/app/(presentation-generator)/dashboard/components/Header";
 
 const DashboardPage: React.FC = () => {
   const router = useRouter();
+  const { hideDashboard } = usePublicConfig();
   const [presentations, setPresentations] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true") {
+    if (hideDashboard) {
       router.replace("/");
       return;
     }
-  }, [router]);
+  }, [router, hideDashboard]);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true") return;
+    if (hideDashboard) return;
     const loadData = async () => {
       await fetchPresentations();
     };

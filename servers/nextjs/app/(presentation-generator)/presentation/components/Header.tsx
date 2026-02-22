@@ -37,8 +37,7 @@ import { usePresentationUndoRedo } from "../hooks/PresentationUndoRedo";
 import ToolTip from "@/components/ToolTip";
 import { clearPresentationData } from "@/store/slices/presentationGeneration";
 import { clearHistory } from "@/store/slices/undoRedoSlice";
-
-declare const process: { env: Record<string, string | undefined> };
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 const Header = ({
   presentation_id,
@@ -59,9 +58,7 @@ const Header = ({
   );
 
   const { onUndo, onRedo, canUndo, canRedo } = usePresentationUndoRedo();
-
-  const hideDashboard =
-    process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true";
+  const { hideDashboard } = usePublicConfig();
 
   const get_presentation_pptx_model = async (id: string): Promise<PptxPresentationModel> => {
     const response = await fetch(`/api/presentation_to_pptx_model?id=${id}`);
