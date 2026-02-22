@@ -1,6 +1,7 @@
 import asyncio
-import dirtyjson
 import json
+
+import dirtyjson  # type: ignore[reportMissingImports]
 from typing import AsyncGenerator, List, Optional
 from fastapi import HTTPException
 from openai import AsyncOpenAI
@@ -17,9 +18,9 @@ from google.genai.types import (
     FunctionCallingConfigMode as GoogleFunctionCallingConfigMode,
 )
 from google.genai.types import Tool as GoogleTool
-from anthropic import AsyncAnthropic
-from anthropic.types import Message as AnthropicMessage
-from anthropic import MessageStreamEvent as AnthropicMessageStreamEvent
+from anthropic import AsyncAnthropic  # type: ignore[reportMissingImports]
+from anthropic.types import Message as AnthropicMessage  # type: ignore[reportMissingImports]
+from anthropic import MessageStreamEvent as AnthropicMessageStreamEvent  # type: ignore[reportMissingImports]
 from enums.llm_provider import LLMProvider
 from models.llm_message import (
     AnthropicAssistantMessage,
@@ -56,6 +57,7 @@ from utils.get_env import (
 from utils.llm_provider import get_llm_provider, get_model
 from utils.parsers import parse_bool_or_none
 from utils.schema_utils import (
+    ensure_array_schemas_have_items,
     ensure_strict_json_schema,
     flatten_json_schema,
     remove_titles_from_schema,
@@ -464,6 +466,8 @@ class LLMClient:
         response_schema = response_format
         all_tools = [*tools] if tools else None
 
+        if depth == 0:
+            ensure_array_schemas_have_items(response_schema)
         use_tool_calls_for_structured_output = (
             self.use_tool_calls_for_structured_output()
         )
@@ -577,6 +581,8 @@ class LLMClient:
     ) -> dict | None:
         client: genai.Client = self._client
 
+        if depth == 0:
+            ensure_array_schemas_have_items(response_format)
         google_tools = None
         if tools:
             google_tools = [GoogleTool(function_declarations=[tool]) for tool in tools]

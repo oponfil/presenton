@@ -133,6 +133,14 @@ def ensure_strict_json_schema(
         }
 
     # arrays
+    # OpenAI requires array schemas to have "items". Zod tuples may produce
+    # type="array" with prefixItems only (no items), which causes 400.
+    if typ == "array" and "items" not in json_schema:
+        prefix_items = json_schema.get("prefixItems")
+        if isinstance(prefix_items, list) and len(prefix_items) > 0 and isinstance(prefix_items[0], dict):
+            json_schema["items"] = deepcopy(prefix_items[0])
+        else:
+            json_schema["items"] = {"type": "string"}
     # { 'type': 'array', 'items': {...} }
     items = json_schema.get("items")
     if isinstance(items, dict):
@@ -201,6 +209,38 @@ def ensure_strict_json_schema(
         return ensure_strict_json_schema(json_schema, path=path, root=root)
 
     return json_schema
+
+
+def ensure_array_schemas_have_items(schema: dict) -> None:
+    """Mutates the schema so every array has an 'items' definition (OpenAI requirement)."""
+    if not isinstance(schema, dict):
+        return
+    for key in ("$defs", "definitions"):
+        defs = schema.get(key)
+        if isinstance(defs, dict):
+            for v in defs.values():
+                ensure_array_schemas_have_items(v)
+    for key in ("properties", "additionalProperties"):
+        node = schema.get(key)
+        if isinstance(node, dict):
+            for v in node.values():
+                ensure_array_schemas_have_items(v)
+    for key in ("items", "contains", "not"):
+        node = schema.get(key)
+        if isinstance(node, dict):
+            ensure_array_schemas_have_items(node)
+    for key in ("anyOf", "allOf", "oneOf"):
+        nodes = schema.get(key)
+        if isinstance(nodes, list):
+            for n in nodes:
+                if isinstance(n, dict):
+                    ensure_array_schemas_have_items(n)
+    prefix_items = schema.get("prefixItems")
+    if schema.get("type") == "array" and "items" not in schema:
+        if isinstance(prefix_items, list) and len(prefix_items) > 0 and isinstance(prefix_items[0], dict):
+            schema["items"] = deepcopy(prefix_items[0])
+        else:
+            schema["items"] = {"type": "string"}
 
 
 def resolve_ref(*, root: dict[str, object], ref: str) -> object:
