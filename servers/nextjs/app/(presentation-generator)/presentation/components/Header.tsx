@@ -35,8 +35,6 @@ import Image from "next/image";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { usePresentationUndoRedo } from "../hooks/PresentationUndoRedo";
 import ToolTip from "@/components/ToolTip";
-import { clearPresentationData } from "@/store/slices/presentationGeneration";
-import { clearHistory } from "@/store/slices/undoRedoSlice";
 import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 const Header = ({
@@ -137,12 +135,6 @@ const Header = ({
       setShowLoader(false);
     }
   };
-  const handleReGenerate = () => {
-    dispatch(clearPresentationData());
-    dispatch(clearHistory())
-    trackEvent(MixpanelEvent.Header_ReGenerate_Button_Clicked, { pathname });
-    router.push(`/presentation?id=${presentation_id}&stream=true`);
-  };
   const downloadLink = (path: string) => {
     // if we have popup access give direct download if not redirect to the path
     if (window.opener) {
@@ -187,10 +179,6 @@ const Header = ({
   const MenuItems = ({ mobile }: { mobile: boolean }) => (
     <div className="flex flex-col lg:flex-row items-center gap-4">
       {/* undo redo */}
-      <button onClick={handleReGenerate} disabled={isStreaming || !presentationData} className="text-white  disabled:opacity-50" >
-
-        Re-Generate
-      </button>
       <div className="flex items-center gap-2 ">
         <ToolTip content="Undo">
           <button disabled={!canUndo} className="text-white disabled:opacity-50" onClick={() => {

@@ -83,7 +83,7 @@ describe('<UploadPage />', () => {
       cy.get('[data-testid="slides-select"]').click({ force: true })
       // Wait for content to be visible
       cy.get('[role="option"]').should('be.visible')
-      // Click the option
+      // Click the option (max 12 slides)
       cy.get('[role="option"]').contains('12').click()
       // Verify selection
       cy.get('[data-testid="slides-select"]').should('contain', '12')

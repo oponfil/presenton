@@ -23,7 +23,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -35,39 +34,22 @@ interface ConfigurationSelectsProps {
   onConfigChange: (key: keyof PresentationConfig, value: any) => void;
 }
 
-type SlideOption = "5" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20";
+type SlideOption = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12";
 
-// Constants
-const SLIDE_OPTIONS: SlideOption[] = ["5", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"];
+// Constants: 1–12 slides only
+const SLIDE_OPTIONS: SlideOption[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 /**
- * Renders a select component for slide count
+ * Renders a select component for slide count (1–12 only)
  */
 const SlideCountSelect: React.FC<{
   value: string | null;
   onValueChange: (value: string) => void;
 }> = ({ value, onValueChange }) => {
-  const [customInput, setCustomInput] = useState(
-    value && !SLIDE_OPTIONS.includes(value as SlideOption) ? value : ""
-  );
-
-  const sanitizeToPositiveInteger = (raw: string): string => {
-    const digitsOnly = raw.replace(/\D+/g, "");
-    if (!digitsOnly) return "";
-    // Remove leading zeros
-    const noLeadingZeros = digitsOnly.replace(/^0+/, "");
-    return noLeadingZeros;
-  };
-
-  const applyCustomValue = () => {
-    const sanitized = sanitizeToPositiveInteger(customInput);
-    if (sanitized && Number(sanitized) > 0) {
-      onValueChange(sanitized);
-    }
-  };
+  const selectValue = value && SLIDE_OPTIONS.includes(value as SlideOption) ? value : "";
 
   return (
-    <Select value={value || ""} onValueChange={onValueChange} name="slides">
+    <Select value={selectValue} onValueChange={onValueChange} name="slides">
       <SelectTrigger
         className="w-[180px] font-instrument_sans font-medium bg-blue-100 border-blue-200 focus-visible:ring-blue-300"
         data-testid="slides-select"
@@ -75,46 +57,6 @@ const SlideCountSelect: React.FC<{
         <SelectValue placeholder="Select Slides" />
       </SelectTrigger>
       <SelectContent className="font-instrument_sans">
-        {/* Sticky custom input at the top */}
-        <div
-          className="sticky top-0 z-10 bg-white  p-2 border-b"
-          onMouseDown={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center gap-2">
-            <Input
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={customInput}
-              onMouseDown={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
-              onChange={(e) => {
-                const next = sanitizeToPositiveInteger(e.target.value);
-                setCustomInput(next);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  applyCustomValue();
-                }
-              }}
-              onBlur={applyCustomValue}
-              placeholder="--"
-              className="h-8 w-16 px-2 text-sm"
-            />
-            <span className="text-sm font-medium">slides</span>
-          </div>
-        </div>
-
-        {/* Hidden item to allow SelectValue to render custom selection */}
-        {value && !SLIDE_OPTIONS.includes(value as SlideOption) && (
-          <SelectItem value={value} className="hidden">
-            {value} slides
-          </SelectItem>
-        )}
-
         {SLIDE_OPTIONS.map((option) => (
           <SelectItem
             key={option}
