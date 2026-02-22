@@ -184,12 +184,15 @@ function convertToAutoShapeBox(element: ElementAttributes): PptxAutoShapeBoxMode
 
   const shapeType = element.borderRadius ? PptxShapeType.ROUNDED_RECTANGLE : PptxShapeType.RECTANGLE;
 
-  let borderRadius = undefined;
+  let borderRadius: number | undefined = undefined;
   for (const eachCornerRadius of element.borderRadius ?? []) {
     if (eachCornerRadius > 0) {
       borderRadius = Math.max(borderRadius ?? 0, eachCornerRadius);
     }
   }
+  // API expects integer (PptxAutoShapeBoxModel.border_radius)
+  const borderRadiusInt =
+    borderRadius !== undefined ? Math.round(borderRadius) : undefined;
 
   return {
     shape_type: "autoshape",
@@ -200,7 +203,7 @@ function convertToAutoShapeBox(element: ElementAttributes): PptxAutoShapeBoxMode
     shadow,
     position,
     text_wrap: element.textWrap ?? true,
-    border_radius: borderRadius || undefined,
+    border_radius: borderRadiusInt,
     paragraphs
   };
 }

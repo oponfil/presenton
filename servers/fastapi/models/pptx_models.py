@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import Annotated, List, Literal, Optional
+from typing import Annotated, List, Literal, Optional, Union
 from annotated_types import Len
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from pptx.util import Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE, MSO_CONNECTOR_TYPE
@@ -131,6 +131,15 @@ class PptxAutoShapeBoxModel(PptxShapeModel):
     border_radius: Optional[int] = None
     paragraphs: Optional[List[PptxParagraphModel]] = None
 
+    @field_validator("border_radius", mode="before")
+    @classmethod
+    def coerce_border_radius_to_int(cls, v: object) -> Optional[int]:
+        if v is None:
+            return None
+        if isinstance(v, (int, float)):
+            return int(round(v))
+        return v
+
 
 class PptxPictureBoxModel(PptxShapeModel):
     shape_type: Literal["picture"] = "picture"
@@ -154,15 +163,21 @@ class PptxConnectorModel(PptxShapeModel):
     opacity: float = 1.0
 
 
+PptxShapeUnion = Annotated[
+    Union[
+        PptxTextBoxModel,
+        PptxAutoShapeBoxModel,
+        PptxConnectorModel,
+        PptxPictureBoxModel,
+    ],
+    Field(discriminator="shape_type"),
+]
+
+
 class PptxSlideModel(BaseModel):
     background: Optional[PptxFillModel] = None
     note: Optional[str] = None
-    shapes: List[
-        PptxTextBoxModel
-        | PptxAutoShapeBoxModel
-        | PptxConnectorModel
-        | PptxPictureBoxModel
-    ]
+    shapes: List[PptxShapeUnion]
 
 
 class PptxPresentationModel(BaseModel):
