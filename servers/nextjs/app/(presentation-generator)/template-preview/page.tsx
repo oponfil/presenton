@@ -14,6 +14,7 @@ import {
 } from "@/app/hooks/useCustomTemplates";
 import { CompiledLayout } from "@/app/hooks/compileLayout";
 import Header from "../dashboard/components/Header";
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 // Component for rendering custom template card with lazy-loaded previews
 const CustomTemplateCard = ({ template }: { template: CustomTemplates }) => {
@@ -99,6 +100,7 @@ const CustomTemplateCard = ({ template }: { template: CustomTemplates }) => {
 };
 
 const LayoutPreview = () => {
+  const { hideCreateTemplate } = usePublicConfig();
   const router = useRouter();
   const { templates: customTemplates, loading: customLoading } = useCustomTemplateSummaries();
   useEffect(() => {
@@ -189,9 +191,11 @@ const LayoutPreview = () => {
             <h2 className="text-xl font-semibold text-gray-800 ">
               My Custom Templates
             </h2>
-            <a href="/custom-template" className="text-sm flex font-bold font-inter items-center justify-center gap-2  bg-[#5146E5] text-white px-4 py-2 rounded-md">
-              <Plus className="w-4 h-4" /> Create new template
-            </a>
+            {!hideCreateTemplate && (
+              <a href="/custom-template" className="text-sm flex font-bold font-inter items-center justify-center gap-2  bg-[#5146E5] text-white px-4 py-2 rounded-md">
+                <Plus className="w-4 h-4" /> Create new template
+              </a>
+            )}
           </div>
 
           {customLoading ? (

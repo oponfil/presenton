@@ -1,8 +1,11 @@
+"use client";
+
 import React from "react";
 import { PresentationCard } from "./PresentationCard";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { PresentationResponse } from "@/app/(presentation-generator)/services/api/dashboard";
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 interface PresentationGridProps {
   presentations: PresentationResponse[];
@@ -12,6 +15,9 @@ interface PresentationGridProps {
   onPresentationDeleted?: (presentationId: string) => void;
 }
 
+const LANDING_UPLOAD = "/upload";
+const LANDING_TEMPLATE_PREVIEW = "/template-preview";
+
 export const PresentationGrid = ({
   presentations,
   type,
@@ -20,9 +26,12 @@ export const PresentationGrid = ({
   onPresentationDeleted,
 }: PresentationGridProps) => {
   const router = useRouter();
+  const { hideUpload } = usePublicConfig();
+  const createPath = hideUpload ? LANDING_TEMPLATE_PREVIEW : LANDING_UPLOAD;
+
   const handleCreateNewPresentation = () => {
     if (type === "slide") {
-      router.push("/upload");
+      router.push(createPath);
     } else {
       router.push("/editor");
     }

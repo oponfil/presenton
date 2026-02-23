@@ -14,6 +14,7 @@ import {
 import { LLMConfig } from "@/types/llm_config";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { usePathname } from "next/navigation";
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 // Button state interface
 interface ButtonState {
@@ -25,10 +26,15 @@ interface ButtonState {
   status?: string;
 }
 
+const LANDING_UPLOAD = "/upload";
+const LANDING_TEMPLATE_PREVIEW = "/template-preview";
+
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
+  const { hideUpload } = usePublicConfig();
   const config = useSelector((state: RootState) => state.userConfig);
+  const landingPath = hideUpload ? LANDING_TEMPLATE_PREVIEW : LANDING_UPLOAD;
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(config.llm_config);
 
   const [downloadingModel, setDownloadingModel] = useState<{
@@ -87,8 +93,8 @@ export default function Home() {
         text: "Save Configuration"
       }));
       // Track navigation from -> to
-      trackEvent(MixpanelEvent.Navigation, { from: pathname, to: "/upload" });
-      router.push("/upload");
+      trackEvent(MixpanelEvent.Navigation, { from: pathname, to: landingPath });
+      router.push(landingPath);
     } catch (error) {
       toast.info(error instanceof Error ? error.message : "Failed to save configuration");
       setButtonState(prev => ({
@@ -135,9 +141,9 @@ export default function Home() {
 
   useEffect(() => {
     if (!canChangeKeys) {
-      router.push("/upload");
+      router.push(landingPath);
     }
-  }, [canChangeKeys, router]);
+  }, [canChangeKeys, router, landingPath]);
 
   if (!canChangeKeys) {
     return null;

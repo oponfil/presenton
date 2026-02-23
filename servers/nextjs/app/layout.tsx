@@ -80,6 +80,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const hideDashboard = process.env.NEXT_PUBLIC_HIDE_DASHBOARD === "true";
+  const hideUpload = process.env.NEXT_PUBLIC_HIDE_UPLOAD === "true";
+  const hideCreateTemplate = process.env.NEXT_PUBLIC_HIDE_CREATE_TEMPLATE === "true";
 
   return (
     <html lang="en">
@@ -87,7 +89,7 @@ export default function RootLayout({
         className={`${inter.variable} ${roboto.variable} ${instrument_sans.variable} antialiased`}
       >
         <Providers>
-          <PublicConfigProvider hideDashboard={hideDashboard}>
+          <PublicConfigProvider hideDashboard={hideDashboard} hideUpload={hideUpload} hideCreateTemplate={hideCreateTemplate}>
             <MixpanelInitializer>
 
               {children}

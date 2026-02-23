@@ -14,6 +14,7 @@ import LLMProviderSelection from "@/components/LLMSelection";
 import Header from "../dashboard/components/Header";
 import { LLMConfig } from "@/types/llm_config";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
+import { usePublicConfig } from "@/app/PublicConfigProvider";
 
 // Button state interface
 interface ButtonState {
@@ -25,9 +26,14 @@ interface ButtonState {
   status?: string;
 }
 
+const LANDING_UPLOAD = "/upload";
+const LANDING_TEMPLATE_PREVIEW = "/template-preview";
+
 const SettingsPage = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { hideUpload } = usePublicConfig();
+  const landingPath = hideUpload ? LANDING_TEMPLATE_PREVIEW : LANDING_UPLOAD;
   const userConfigState = useSelector((state: RootState) => state.userConfig);
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(
     userConfigState.llm_config
@@ -91,8 +97,8 @@ const SettingsPage = () => {
         isDisabled: false,
         text: "Save Configuration",
       }));
-      trackEvent(MixpanelEvent.Navigation, { from: pathname, to: "/upload" });
-      router.push("/upload");
+      trackEvent(MixpanelEvent.Navigation, { from: pathname, to: landingPath });
+      router.push(landingPath);
     } catch (error) {
       toast.info(error instanceof Error ? error.message : "Failed to save configuration");
       setButtonState(prev => ({

@@ -7,13 +7,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { checkIfSelectedOllamaModelIsPulled } from '@/utils/providerUtils';
 import { LLMConfig } from '@/types/llm_config';
+import { usePublicConfig } from '@/app/PublicConfigProvider';
+
+const LANDING_UPLOAD = '/upload';
+const LANDING_TEMPLATE_PREVIEW = '/template-preview';
 
 export function ConfigurationInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
+  const { hideUpload } = usePublicConfig();
 
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const route = usePathname();
+  const landingPath = hideUpload ? LANDING_TEMPLATE_PREVIEW : LANDING_UPLOAD;
 
   // Fetch user config state
   useEffect(() => {
@@ -62,8 +68,8 @@ export function ConfigurationInitializer({ children }: { children: React.ReactNo
           }
         }
         if (route === '/') {
-          router.push('/upload');
-          setLoadingToFalseAfterNavigatingTo('/upload');
+          router.push(landingPath);
+          setLoadingToFalseAfterNavigatingTo(landingPath);
         } else {
           setIsLoading(false);
         }
@@ -75,8 +81,8 @@ export function ConfigurationInitializer({ children }: { children: React.ReactNo
       }
     } else {
       if (route === '/') {
-        router.push('/upload');
-        setLoadingToFalseAfterNavigatingTo('/upload');
+        router.push(landingPath);
+        setLoadingToFalseAfterNavigatingTo(landingPath);
       } else {
         setIsLoading(false);
       }
