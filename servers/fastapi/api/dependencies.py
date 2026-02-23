@@ -1,9 +1,9 @@
 """
 Optional API key authentication for the Presenton API.
 
-When PRESENTON_API_KEY is set, all requests to protected routes must include
-either the header X-API-Key, Authorization: Bearer <key>, or query param api_key.
-When PRESENTON_API_KEY is not set, no authentication is required.
+When NEXT_PUBLIC_PRESENTON_API_KEY is set, all requests to protected routes must include
+X-API-Key, Authorization: Bearer <key>, or query api_key. Backend reads the same variable
+as the frontend. When not set, no authentication is required.
 
 Query param api_key is supported for EventSource/SSE, which cannot send headers.
 """

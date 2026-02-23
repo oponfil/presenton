@@ -120,8 +120,7 @@ You can disable anonymous telemetry using the following environment variable:
 
 You can protect the API with a single static API key so that only clients that know the key can call `/api/v1/ppt/*` and `/api/v1/webhook/*`.
 
-- **PRESENTON_API_KEY**: If set, every request to the API must include this key. If not set, the API remains open (no authentication).
-- **NEXT_PUBLIC_PRESENTON_API_KEY**: Set this to the same value as `PRESENTON_API_KEY` when the web UI and the API run together (e.g. Docker), so that the browser can send the key with each request. Required for the UI to work when `PRESENTON_API_KEY` is set.
+- **NEXT_PUBLIC_PRESENTON_API_KEY**: If set, the web UI sends this key with every request, and the **backend uses the same variable** to check API calls. One variable for both.
 
 **How to generate a key**
 
@@ -149,7 +148,7 @@ Clients can send the key in either of these ways:
 ```bash
 curl -X POST http://localhost:5000/api/v1/ppt/presentation/generate \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_PRESENTON_API_KEY" \
+  -H "Authorization: Bearer your-key" \
   -d '{
     "content": "Introduction to Machine Learning",
     "n_slides": 5,
@@ -161,17 +160,16 @@ curl -X POST http://localhost:5000/api/v1/ppt/presentation/generate \
 
 **Docker**
 
-When using Docker, set both variables to the same key so the backend checks the key and the frontend can send it:
+Set `NEXT_PUBLIC_PRESENTON_API_KEY`:
 
 ```bash
 docker run -it --name presenton -p 5000:80 \
-  -e PRESENTON_API_KEY="your-generated-key" \
   -e NEXT_PUBLIC_PRESENTON_API_KEY="your-generated-key" \
   -v "./app_data:/app_data" \
   ghcr.io/presenton/presenton:latest
 ```
 
-Note: `NEXT_PUBLIC_*` is inlined at build time. If you build the image yourself, pass it as a build arg, e.g. `--build-arg NEXT_PUBLIC_PRESENTON_API_KEY=your-key`, or set it in your CI/build environment.
+Note: `NEXT_PUBLIC_*` is inlined into the frontend at **build** time. If you build the image yourself, pass the key as build arg: `--build-arg NEXT_PUBLIC_PRESENTON_API_KEY=your-key`. At **runtime**, the backend still reads it from the environment, so one variable works for API auth even without rebuilding.
 
 > **Note:** You can freely choose both the LLM (text generation) and the image provider. Supported image providers: **dall-e-3**, **gpt-image-1.5** (OpenAI), **gemini_flash**, **nanobanana_pro** (Google), **pexels**, **pixabay**, and **comfyui** (self-hosted).
 

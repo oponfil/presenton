@@ -102,7 +102,8 @@ def get_web_grounding_env():
 
 
 def get_presenton_api_key_env():
-    return os.getenv("PRESENTON_API_KEY")
+    """Expected API key; backend reads NEXT_PUBLIC_PRESENTON_API_KEY (same as frontend)."""
+    return os.getenv("NEXT_PUBLIC_PRESENTON_API_KEY")
 
 
 def get_comfyui_url_env():
