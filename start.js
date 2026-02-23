@@ -58,6 +58,7 @@ const setupNodeModules = () => {
 process.env.USER_CONFIG_PATH = userConfigPath;
 
 //? UserConfig is only setup if API Keys can be changed
+// SECURITY: Never console.log/print process.env or userConfig — they contain API keys.
 const setupUserConfigFromEnv = () => {
   let existingConfig = {};
 

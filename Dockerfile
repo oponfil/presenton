@@ -42,9 +42,16 @@ RUN npm install
 # Copy Next.js app
 COPY servers/nextjs/ /app/servers/nextjs/
 
-# Build the Next.js app (NEXT_PUBLIC_* must be set at build time to be inlined)
+# Build the Next.js app (NEXT_PUBLIC_* must be set at build time to be inlined).
+# Pass as build args when building the image, e.g.:
+#   docker build --build-arg NEXT_PUBLIC_HIDE_UPLOAD=true --build-arg NEXT_PUBLIC_HIDE_CREATE_TEMPLATE=true ...
+# On Railway: set these in Variables and enable "Expose to build" / use as build args.
 ARG NEXT_PUBLIC_HIDE_DASHBOARD=false
+ARG NEXT_PUBLIC_HIDE_UPLOAD=false
+ARG NEXT_PUBLIC_HIDE_CREATE_TEMPLATE=false
 ENV NEXT_PUBLIC_HIDE_DASHBOARD=$NEXT_PUBLIC_HIDE_DASHBOARD
+ENV NEXT_PUBLIC_HIDE_UPLOAD=$NEXT_PUBLIC_HIDE_UPLOAD
+ENV NEXT_PUBLIC_HIDE_CREATE_TEMPLATE=$NEXT_PUBLIC_HIDE_CREATE_TEMPLATE
 WORKDIR /app/servers/nextjs
 RUN npm run build
 
