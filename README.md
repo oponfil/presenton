@@ -116,6 +116,63 @@ You can disable anonymous telemetry using the following environment variable:
 
 - **DISABLE_ANONYMOUS_TELEMETRY=[true/false]**: Set this to **true** to disable anonymous telemetry.
 
+### API authentication (optional)
+
+You can protect the API with a single static API key so that only clients that know the key can call `/api/v1/ppt/*` and `/api/v1/webhook/*`.
+
+- **PRESENTON_API_KEY**: If set, every request to the API must include this key. If not set, the API remains open (no authentication).
+- **NEXT_PUBLIC_PRESENTON_API_KEY**: Set this to the same value as `PRESENTON_API_KEY` when the web UI and the API run together (e.g. Docker), so that the browser can send the key with each request. Required for the UI to work when `PRESENTON_API_KEY` is set.
+
+**How to generate a key**
+
+Generate a secure random key (e.g. 32 bytes, URL-safe base64):
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Or with OpenSSL:
+
+```bash
+openssl rand -base64 32
+```
+
+**How to send the key**
+
+Clients can send the key in either of these ways:
+
+1. **Header** (preferred): `Authorization: Bearer <your-key>` or `X-API-Key: <your-key>`
+2. **Query parameter** (for SSE/EventSource only, where headers are not supported): `?api_key=<your-key>`
+
+**Example with curl**
+
+```bash
+curl -X POST http://localhost:5000/api/v1/ppt/presentation/generate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_PRESENTON_API_KEY" \
+  -d '{
+    "content": "Introduction to Machine Learning",
+    "n_slides": 5,
+    "language": "English",
+    "template": "general",
+    "export_as": "pptx"
+  }'
+```
+
+**Docker**
+
+When using Docker, set both variables to the same key so the backend checks the key and the frontend can send it:
+
+```bash
+docker run -it --name presenton -p 5000:80 \
+  -e PRESENTON_API_KEY="your-generated-key" \
+  -e NEXT_PUBLIC_PRESENTON_API_KEY="your-generated-key" \
+  -v "./app_data:/app_data" \
+  ghcr.io/presenton/presenton:latest
+```
+
+Note: `NEXT_PUBLIC_*` is inlined at build time. If you build the image yourself, pass it as a build arg, e.g. `--build-arg NEXT_PUBLIC_PRESENTON_API_KEY=your-key`, or set it in your CI/build environment.
+
 > **Note:** You can freely choose both the LLM (text generation) and the image provider. Supported image providers: **dall-e-3**, **gpt-image-1.5** (OpenAI), **gemini_flash**, **nanobanana_pro** (Google), **pexels**, **pixabay**, and **comfyui** (self-hosted).
 
 ### Using OpenAI

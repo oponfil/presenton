@@ -3,11 +3,16 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Path
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.dependencies import verify_api_key
 from enums.webhook_event import WebhookEvent
 from models.sql.webhook_subscription import WebhookSubscription
 from services.database import get_async_session
 
-API_V1_WEBHOOK_ROUTER = APIRouter(prefix="/api/v1/webhook", tags=["Webhook"])
+API_V1_WEBHOOK_ROUTER = APIRouter(
+    prefix="/api/v1/webhook",
+    tags=["Webhook"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 
 class SubscribeToWebhookRequest(BaseModel):

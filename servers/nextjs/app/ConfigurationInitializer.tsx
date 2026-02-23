@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { checkIfSelectedOllamaModelIsPulled } from '@/utils/providerUtils';
 import { LLMConfig } from '@/types/llm_config';
 import { usePublicConfig } from '@/app/PublicConfigProvider';
+import { getHeader } from '@/app/(presentation-generator)/services/api/header';
 
 const LANDING_UPLOAD = '/upload';
 const LANDING_TEMPLATE_PREVIEW = '/template-preview';
@@ -94,9 +95,7 @@ export function ConfigurationInitializer({ children }: { children: React.ReactNo
     try {
       const response = await fetch('/api/v1/ppt/openai/models/available', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getHeader(),
         body: JSON.stringify({
           url: llmConfig.CUSTOM_LLM_URL,
           api_key: llmConfig.CUSTOM_LLM_API_KEY,

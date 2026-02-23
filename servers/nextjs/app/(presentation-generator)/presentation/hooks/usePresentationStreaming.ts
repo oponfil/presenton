@@ -8,6 +8,7 @@ import {
 import { jsonrepair } from "jsonrepair";
 import { toast } from "sonner";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
+import { appendApiKeyToUrl } from "@/app/(presentation-generator)/services/api/header";
 
 export const usePresentationStreaming = (
   presentationId: string,
@@ -30,7 +31,7 @@ export const usePresentationStreaming = (
       trackEvent(MixpanelEvent.Presentation_Stream_API_Call);
 
       eventSource = new EventSource(
-        `/api/v1/ppt/presentation/stream/${presentationId}`
+        appendApiKeyToUrl(`/api/v1/ppt/presentation/stream/${presentationId}`)
       );
 
       eventSource.addEventListener("response", (event) => {

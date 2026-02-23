@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Switch } from "./ui/switch";
+import { getHeader } from "@/app/(presentation-generator)/services/api/header";
 
 interface OpenAIConfigProps {
   openaiApiKey: string;
@@ -54,9 +55,7 @@ export default function OpenAIConfig({
     try {
       const response = await fetch('/api/v1/ppt/openai/models/available', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getHeader(),
         body: JSON.stringify({
           url: openaiUrl,
           api_key: openaiApiKey
