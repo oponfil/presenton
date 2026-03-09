@@ -22,6 +22,7 @@ from models.presentation_outline_model import (
     PresentationOutlineModel,
     SlideOutlineModel,
 )
+
 from enums.tone import Tone
 from enums.verbosity import Verbosity
 from models.pptx_models import PptxPresentationModel
@@ -30,6 +31,7 @@ from models.presentation_structure_model import PresentationStructureModel
 from models.presentation_with_slides import (
     PresentationWithSlides,
 )
+
 from models.sql.template import TemplateModel
 
 from services.documents_loader import DocumentsLoader
